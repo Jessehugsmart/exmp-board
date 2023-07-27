@@ -1,0 +1,118 @@
+// Copyright (c) 2023 Nordic Semiconductor ASA
+// SPDX-License-Identifier: Apache-2.0
+
+/dts-v1/;
+#include <nordic/nrf5340_cpuapp_qkaa.dtsi>
+#include "s_combo_boards.dtsi"
+//#include <nordic/nrf_gpio.h>
+/ {
+	model = "S_Combo_Boards";
+	compatible = "s-combo-boards";
+
+	chosen {
+        zephyr,sram = &sram0;
+        zephyr,flash = &flash0;
+        zephyr,code-partition = &slot0_partition;
+        zephyr,ipc_shm = &sram0_shared; 
+		zephyr,bt-hci-rpmsg-ipc = &ipc0;
+		zephyr,ieee802154 = &ieee802154;
+    };
+	reserved-memory {
+        #address-cells = <1>;
+        #size-cells = <1>;
+        ranges;
+
+
+        //sram0_ns: image_ns@20000000 {
+            /* Non-Secure image memory */
+        //};
+        sram0_shared: memory@20070000 {
+            /* SRAM allocated to shared memory */
+            reg = <0x20070000 0x10000>;
+        };
+    };
+
+	
+	buttons {
+		compatible = "gpio-keys";
+		button0: button_0 {
+			gpios = <&gpio0 23 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "Push button 1";
+		};
+		button1: button_1 {
+			gpios = <&gpio0 24 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "Push button 2";
+		};
+		button2: button_2 {
+			gpios = <&gpio0 8 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "Push button 3";
+		};
+		button3: button_3 {
+			gpios = <&gpio0 9 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "Push button 4";
+		};
+	};
+	aliases {
+        sw0 = &button0;
+		sw1 = &button1;
+		sw2 = &button2;
+		sw3 = &button3;
+		i2c = &i2c0;
+		gpio0 = &gpio0;
+
+    };
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		boot_partition: partition@0 {
+			label = "mcuboot";
+			reg = <0x0 0x10000>;
+		};
+		slot0_partition: partition@10000 {
+			label = "image-0";
+			reg = <0x10000 0x40000>;
+		};
+		slot0_ns_partition: partition@50000 {
+			label = "image-0-nonsecure";
+			reg = <0x50000 0x30000>;
+		};
+		slot1_partition: partition@80000 {
+			label = "image-1";
+			reg = <0x80000 0x40000>;
+		};
+		slot1_ns_partition: partition@c0000 {
+			label = "image-1-nonsecure";
+			reg = <0xc0000 0x30000>;
+		};
+		scratch_partition: partition@f0000 {
+			label = "image-scratch";
+			reg = <0xf0000 0xa000>;
+		};
+		storage_partition: partition@fa000 {
+			label = "storage";
+			reg = <0xfa000 0x6000>;
+		};
+	};
+};
+
+arduino_i2c: &i2c0 {
+	compatible = "nordic,nrf-twim";
+	/* Cannot be used together with uart0. */
+	status = "okay";
+	pinctrl-0 = <&i2c0_default>;
+	pinctrl-1 = <&i2c0_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+&gpiote {
+	status = "okay";
+};
+
+&gpio0 {
+	status = "okay";
+};

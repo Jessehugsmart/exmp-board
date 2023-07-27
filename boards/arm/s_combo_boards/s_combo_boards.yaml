@@ -1,0 +1,13 @@
+# Copyright (c) 2023 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+identifier: s_combo_boards
+name: S_Combo_Boards
+type: mcu
+arch: arm
+ram: 512
+flash: 1024
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools

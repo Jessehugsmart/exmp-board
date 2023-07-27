@@ -1,0 +1,6 @@
+# Copyright (c) 2023 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_S_COMBO_BOARDS
+	bool "S_Combo_Boards"
+	depends on SOC_NRF5340_CPUAPP_QKAA
