@@ -38,7 +38,7 @@ config BOARD_ENABLE_CPUNET
 
 config DOMAIN_CPUNET_BOARD
 	string
-	default "nrf5340dk_nrf5340_cpunet"
+	default "s_combo_boards_net.dts"
 	depends on BOARD_ENABLE_CPUNET
 	help
 	  The board which will be used for CPUNET domain when creating a multi

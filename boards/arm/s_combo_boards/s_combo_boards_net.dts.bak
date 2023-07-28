@@ -1,8 +1,11 @@
-// Copyright (c) 2023 Nordic Semiconductor ASA
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * Copyright (c) 2020 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /dts-v1/;
-#include <nordic/nrf5340_cpuapp_qkaa.dtsi>
+#include <nordic/nrf5340_cpunet_qkaa.dtsi>
 #include "s_combo_boards.dtsi"
 //#include <nordic/nrf_gpio.h>
 / {
@@ -10,13 +13,12 @@
 	compatible = "s-combo-boards";
 
 	chosen {
-       zephyr,sram = &sram0_image;
-		zephyr,flash = &flash0;
+        zephyr,sram = &sram1;
+        zephyr,flash = &flash1;
         zephyr,code-partition = &slot0_partition;
+        zephyr,ipc_shm = &sram0_shared; 
 		zephyr,bt-hci-rpmsg-ipc = &ipc0;
 		zephyr,ieee802154 = &ieee802154;
-		zephyr,sram-secure-partition = &sram0_s;
-		zephyr,sram-non-secure-partition = &sram0_ns;
     };
 	
 	buttons {
@@ -43,13 +45,12 @@
 		sw1 = &button1;
 		sw2 = &button2;
 		sw3 = &button3;
-		i2c = &i2c0;
-		gpio0 = &gpio0;
 
     };
 };
 
-&flash0 {
+&flash1 {
+
 	partitions {
 		compatible = "fixed-partitions";
 		#address-cells = <1>;
@@ -57,31 +58,23 @@
 
 		boot_partition: partition@0 {
 			label = "mcuboot";
-			reg = <0x0 0x10000>;
+			reg = <0x00000000 0xc000>;
 		};
-		slot0_partition: partition@10000 {
+		slot0_partition: partition@c000 {
 			label = "image-0";
-			reg = <0x10000 0x40000>;
+			reg = <0x0000C000 0x12000>;
 		};
-		slot0_ns_partition: partition@50000 {
-			label = "image-0-nonsecure";
-			reg = <0x50000 0x30000>;
-		};
-		slot1_partition: partition@80000 {
+		slot1_partition: partition@1e000 {
 			label = "image-1";
-			reg = <0x80000 0x40000>;
+			reg = <0x0001E000 0x12000>;
 		};
-		slot1_ns_partition: partition@c0000 {
-			label = "image-1-nonsecure";
-			reg = <0xc0000 0x30000>;
-		};
-		scratch_partition: partition@f0000 {
+		scratch_partition: partition@30000 {
 			label = "image-scratch";
-			reg = <0xf0000 0xa000>;
+			reg = <0x00030000 0xa000>;
 		};
-		storage_partition: partition@fa000 {
+		storage_partition: partition@3a000 {
 			label = "storage";
-			reg = <0xfa000 0x6000>;
+			reg = <0x0003a000 0x6000>;
 		};
 	};
 };
@@ -103,26 +96,9 @@ arduino_i2c: &i2c0 {
 	status = "okay";
 };
 
-/ {
-
-	reserved-memory {
-		#address-cells = <1>;
-		#size-cells = <1>;
-		ranges;
-
-		sram0_image: image@20000000 {
-			/* Zephyr image(s) memory */
-		};
-
-		sram0_s: image_s@20000000 {
-			/* Secure image memory */
-		};
-
-		sram0_ns: image_ns@20040000 {
-			/* Non-Secure image memory */
-		};
-	};
+&gpio1 {
+	status = "okay";
 };
 
-/* Include partition configuration file */
-#include "nrf5340_cpuapp_partition_conf.dts"
+/* Include shared RAM configuration file */
+#include "nrf5340_shared_sram_planning_conf.dts"
